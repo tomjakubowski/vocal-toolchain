@@ -11,7 +11,6 @@ for dir in "${path_dirs[@]}"; do
     test_path="$dir/$cmd"
     if [[ -x "$test_path" ]]; then
         if [[ $(realpath "$test_path") -ef $(realpath "$0") ]]; then
-            echo "current detected $0 is $test_path"
             continue
         else
             wrapped_cmd="$test_path"
