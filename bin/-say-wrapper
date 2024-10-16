@@ -1,0 +1,28 @@
+#!/bin/bash
+
+cmd=${0##*/}
+wrapped_cmd=""
+
+say -v Tom -- "vocal $cmd:" "$@"
+
+# Iterate through PATH
+IFS=: read -ra path_dirs <<< "$PATH"
+for dir in "${path_dirs[@]}"; do
+    test_path="$dir/$cmd"
+    if [[ -x "$test_path" ]]; then
+        if [[ $(realpath "$test_path") -ef $(realpath "$0") ]]; then
+            echo "current detected $0 is $test_path"
+            continue
+        else
+            wrapped_cmd="$test_path"
+            break
+        fi
+    fi
+done
+
+if [[ -n "$wrapped_cmd" ]]; then
+    exec "$wrapped_cmd" "$@"
+else
+    echo "No command '$cmd' found on PATH to wrap" >&2
+    exit 1
+fi
